@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:provider/provider.dart';
+import 'package:thecartapp/cart_model.dart';
+import 'package:thecartapp/cart_provider.dart';
+import 'package:thecartapp/db_helper.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -9,6 +13,9 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
+
+
+  DBHelper dbHelper = DBHelper();
   List<String> productName = [
     'Mango',
     'Oranges',
@@ -40,16 +47,25 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   @override
   Widget build(BuildContext context) {
+
+    final cart = Provider.of<CartProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.green,
         title: const Text("Product List"),
         centerTitle: true,
-        actions: const [
+        actions: [
           Center(
             child: badges.Badge(
-              badgeContent: Text(
-                '0',
-                style: TextStyle(color: Colors.white),
+              badgeContent: Consumer<CartProvider>(
+                builder: (context,value,child){
+                  return Text(
+                    value.getCounter().toString(),
+                    style: TextStyle(color: Colors.white),
+                  );
+                },
+
               ),
               badgeAnimation: badges.BadgeAnimation.scale(
                 animationDuration: Duration(milliseconds: 300),
@@ -98,14 +114,35 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                       const SizedBox(height: 5,),
                                       Align(
                                         alignment: Alignment.bottomRight,
-                                        child: Container(
-                                          height: 35,
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            borderRadius: BorderRadius.circular(5),
+                                        child: InkWell(
+                                          onTap: (){
+                                                dbHelper!.insert(
+                                                  Cart(id: index,
+                                                      productId: index.toString(),
+                                                      productName: productName[index].toString(),
+                                                      initialPrice: productPrice[index] ,
+                                                      productPrice: productPrice[index],
+                                                      quantity: 1,
+                                                      unitTag: productUnit[index].toString(),
+                                                      image: productImage.toString())
+                                                ).then((value){
+                                                  cart.addTotalPrice(double.parse(productPrice[index].toString()));
+                                                  cart.addCounter();
+
+                                                    print('product is added to cart');
+                                                }).onError((error, stackTrace) {
+                                                          print(error.toString());
+                                                });
+                                          },
+                                          child: Container(
+                                            height: 35,
+                                            width: 100,
+                                            decoration: BoxDecoration(
+                                              color: Colors.green,
+                                              borderRadius: BorderRadius.circular(5),
+                                            ),
+                                            child: const Center(child: Text("Add to Cart",style: TextStyle(color: Colors.white),)),
                                           ),
-                                          child: const Center(child: Text("Add to Cart",style: TextStyle(color: Colors.white),)),
                                         ),
                                       )
                                     ],
