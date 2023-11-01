@@ -18,7 +18,7 @@ class Cart {
     required this.initialPrice,
     required this.productPrice,
     required this.quantity,
-    required this.unitTag,
+    required this.unitTag, 
     required this.image
 });
 
