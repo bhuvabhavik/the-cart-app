@@ -3,6 +3,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:provider/provider.dart';
 import 'package:thecartapp/cart_model.dart';
 import 'package:thecartapp/cart_provider.dart';
+import 'package:thecartapp/cart_screen.dart';
 import 'package:thecartapp/db_helper.dart';
 
 class ProductListScreen extends StatefulWidget {
@@ -56,21 +57,27 @@ class _ProductListScreenState extends State<ProductListScreen> {
         title: const Text("Product List"),
         centerTitle: true,
         actions: [
-          Center(
-            child: badges.Badge(
-              badgeContent: Consumer<CartProvider>(
-                builder: (context,value,child){
-                  return Text(
-                    value.getCounter().toString(),
-                    style: TextStyle(color: Colors.white),
-                  );
-                },
+          GestureDetector(
+            onTap: (){
+              
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>CartScreen()));
+            },
+            child: Center(
+              child: badges.Badge(
+                badgeContent: Consumer<CartProvider>(
+                  builder: (context,value,child){
+                    return Text(
+                      value.getCounter().toString(),
+                      style: TextStyle(color: Colors.white),
+                    );
+                  },
 
+                ),
+                badgeAnimation: badges.BadgeAnimation.scale(
+                  animationDuration: Duration(milliseconds: 300),
+                ),
+                child: Icon(Icons.shopping_cart),
               ),
-              badgeAnimation: badges.BadgeAnimation.scale(
-                animationDuration: Duration(milliseconds: 300),
-              ),
-              child: Icon(Icons.shopping_cart),
             ),
           ),
           SizedBox(
@@ -158,9 +165,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         ),
                       ),
                     );
-                  }))
+                  }),),
+
+
         ],
       ),
     );
   }
 }
+
+
+
+
+
